@@ -11,13 +11,8 @@ interface Business {
   sub_category: string;
 }
 
-const categories = [
-  { name: "All", icon: "✨" },
-  { name: "Healthcare", icon: "💙" },
-  { name: "Home Services", icon: "🧰" },
-  { name: "Education & Training", icon: "🎓" },
-  { name: "Food", icon: "🍴" },
-];
+
+
 
 const Frontend: React.FC = () => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -32,15 +27,53 @@ const navigate = useNavigate();
     if (window.innerWidth < 768) return 2;
     return 3;
   };
+const [categories, setCategories] = useState<{ name: string; icon: string }[]>([
+  { name: "All", icon: "✨" }, // default
+]);
+const visibleCount = 4;
+
+
+
+const [startIndex, setStartIndex] = useState(0);
+const otherCategories = categories.slice(1);
+
 
   const [chipsPerSlide, setChipsPerSlide] = useState(getChipsPerSlide());
   const [activeSlide, setActiveSlide] = useState(0);
+  
+  const fetchCategories = async () => {
+  try {
+    const res = await axios.get(`${ADMIN_BACKEND}/api/admin/categories`);
 
-  useEffect(() => {
-    const onResize = () => setChipsPerSlide(getChipsPerSlide());
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
+    // map icon (optional)
+    const data = res.data.map((c: any) => ({
+      name: c.name,
+      icon: "📌", // you can customize per category later
+    }));
+
+    setCategories([{ name: "All", icon: "✨" }, ...data]);
+  } catch (err) {
+    console.log("Category fetch error");
+  }
+};
+
+ useEffect(() => {
+  fetchBusinesses();
+  fetchCategories();   // ⭐ ADD THIS
+}, []);
+
+const goLeft = () => {
+  setStartIndex((prev) => Math.max(prev - visibleCount, 0));
+};
+
+const goRight = () => {
+  setStartIndex((prev) =>
+    Math.min(
+      prev + visibleCount,
+      Math.max(otherCategories.length - visibleCount, 0)
+    )
+  );
+};
 
   const slides: typeof categories[] = [];
   for (let i = 0; i < categories.length; i += chipsPerSlide) {
@@ -162,83 +195,73 @@ const [navOpen, setNavOpen] = useState(false);
           </span>
         </div>
 
-        {/* CATEGORY SLIDER */}
-        <div className="position-relative mt-4 mx-auto" style={{ maxWidth: 520 }}>
-          <div style={{ overflow: "hidden" }}>
-            <div
-              className="d-flex"
-              style={{
-                width: `${slides.length * 100}%`,
-                transform: `translateX(-${
-                  activeSlide * (100 / slides.length)
-                }%)`,
-                transition: "transform 0.4s ease",
-              }}
-            >
-              {slides.map((slide, index) => (
-                <div
-                  key={index}
-                  className="d-flex justify-content-center gap-2"
-                  style={{ width: `${100 / slides.length}%` }}
-                >
-                  {slide.map((c) => (
-                    <span
-                      key={c.name}
-                    onClick={() => setSelectedCategory(c.name)}
+{/* CATEGORY SLIDER */}
+{/* CATEGORY FILTER WITH ARROWS */}
+{/* CATEGORY FILTER */}
+{/* CATEGORY FILTER */}
+<div
+  className="bg-white position-sticky top-0 z-3 py-3 mt-4"
+  style={{ borderBottom: "1px solid #eee" }}
+>
+ <div className="d-flex align-items-center justify-content-center">
 
 
+    {/* ALL FIXED */}
+    <button
+      onClick={() => setSelectedCategory("All")}
+      className="border-0 rounded-pill px-4 py-2 fw-semibold me-2"
+      style={{
+        background: selectedCategory === "All" ? "#0d6efd" : "#f1f3f5",
+        color: selectedCategory === "All" ? "#fff" : "#333",
+      }}
+    >
+      ✨ All
+    </button>
 
-                      className="px-3 py-2 rounded-pill shadow-sm fw-semibold"
-                      style={{
-                        cursor: "pointer",
-                        whiteSpace: "nowrap",
-                        background:
-                          selectedCategory === c.name
-                            ? "#0d6efd"
-                            : "#fff",
-                        color:
-                          selectedCategory === c.name ? "#fff" : "#000",
-                      }}
-                    >
-                      {c.icon} {c.name}
-                    </span>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
+    {/* LEFT */}
+    <button
+      onClick={goLeft}
+      disabled={startIndex === 0}
+      className="btn btn-light rounded-circle shadow me-2"
+      style={{ width: 45, height: 45 }}
+    >
+      ‹
+    </button>
 
-          {activeSlide > 0 && (
-            <button
-              onClick={() => setActiveSlide((s) => s - 1)}
-              className="btn btn-light rounded-circle shadow-sm"
-              style={{
-                position: "absolute",
-                left: -12,
-                top: "50%",
-                transform: "translateY(-50%)",
-              }}
-            >
-              ‹
-            </button>
-          )}
+    {/* SHOW ONLY 4 */}
+    <div className="d-flex gap-3 flex-nowrap overflow-hidden">
+      {otherCategories
+        .slice(startIndex, startIndex + visibleCount)
+        .map((c) => (
+          <button
+            key={c.name}
+            onClick={() => setSelectedCategory(c.name)}
+            className="border-0 rounded-pill px-4 py-2 fw-semibold"
+            style={{
+              background:
+                selectedCategory === c.name ? "#0d6efd" : "#f1f3f5",
+              color: selectedCategory === c.name ? "#fff" : "#333",
+            }}
+          >
+            <span className="me-2">{c.icon}</span>
+            {c.name}
+          </button>
+        ))}
+    </div>
 
-          {activeSlide < slides.length - 1 && (
-            <button
-              onClick={() => setActiveSlide((s) => s + 1)}
-              className="btn btn-light rounded-circle shadow-sm"
-              style={{
-                position: "absolute",
-                right: -12,
-                top: "50%",
-                transform: "translateY(-50%)",
-              }}
-            >
-              ›
-            </button>
-          )}
-        </div>
-      </div>
+    {/* RIGHT */}
+    <button
+      onClick={goRight}
+      disabled={startIndex + visibleCount >= otherCategories.length}
+      className="btn btn-light rounded-circle shadow ms-2"
+      style={{ width: 45, height: 45 }}
+    >
+      ›
+    </button>
+
+  </div>
+</div>
+
 
       {/* BUSINESS CARDS */}
       <div className="container mt-5">
@@ -250,7 +273,7 @@ const [navOpen, setNavOpen] = useState(false);
   className="card border-0 shadow-sm rounded-4 h-100"
   style={{ cursor: "pointer" }}
   onClick={() => {
-    if (b.category.toLowerCase() === "healthcare") {
+    if (b.category.toLowerCase() === "health & medical") {
       navigate("/healthcare-directory");
     }
   }}
@@ -387,6 +410,7 @@ const [navOpen, setNavOpen] = useState(false);
     © 2024 GWT-QR
   </div>
 </footer>
+    </div>
     </div>
   );
 };

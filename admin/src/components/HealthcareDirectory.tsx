@@ -1,20 +1,20 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
-
+import api from "../frontend-api/api";
 /* ---------------- CATEGORIES ---------------- */
-const categories = [
+const staticCategories = [
   { name: "Hospitals", img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3" },
-  { name: "Clinics", img: "https://images.unsplash.com/photo-1580281657527-47a0c9e8e0e7" },
-  { name: "Dental Clinics", img: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95" },
-  { name: "Eye Hospitals", img: "https://images.unsplash.com/photo-1581595219315-a187dd40c322" },
-  { name: "Diagnostic Centers", img: "https://images.unsplash.com/photo-1581093458791-9d09f5b2a7c4" },
-  { name: "Pathology Labs", img: "https://images.unsplash.com/photo-1579154204601-01588f351e67" },
-  { name: "Pharmacies", img: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88" },
-  { name: "Physiotherapy Centers", img: "https://images.unsplash.com/photo-1579154204601-01588f351e67" },
+  { name: "Clinics", img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3" },
+  { name: "Dental Clinics", img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3" },
+  { name: "Eye Hospitals", img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3" },
+  { name: "Diagnostic Centers", img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3" },
+  { name: "Pathology Labs", img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3" },
+  { name: "Pharmacies", img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3" },
+  { name: "Physiotherapy Centers", img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3" },
 ];
 
 /* ---------------- REALISTIC NAMES ---------------- */
@@ -89,7 +89,7 @@ const createBusinesses = () => {
     isOpen: boolean;
   }[] = [];
 
-  categories.forEach((cat) => {
+  staticCategories.forEach((cat) => {
     namePool[cat.name].forEach((name, i) => {
       list.push({
         id: `${cat.name}-${i}`,
@@ -109,7 +109,7 @@ const createBusinesses = () => {
 export default function HealthcareDirectory() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
-
+const [categories, setCategories] = useState<any[]>([]);
   /* FILTERS */
   const [showOpen, setShowOpen] = useState(true);
   const [homeOnly, setHomeOnly] = useState(false);
@@ -120,6 +120,42 @@ const [showLoginPopup, setShowLoginPopup] = useState(false);
 const [mode, setMode] = useState<"login" | "signup">("login");
 const [confirmPassword, setConfirmPassword] = useState("");
 const [mobile, setMobile] = useState("");
+const categoryScrollRef = useRef<HTMLDivElement | null>(null);
+const scrollCategories = (direction: "left" | "right") => {
+  if (!categoryScrollRef.current) return;
+
+  const amount = 200;
+
+  categoryScrollRef.current.scrollBy({
+    left: direction === "left" ? -amount : amount,
+    behavior: "smooth",
+  });
+};
+/* ================= FETCH HEALTH SUBCATEGORIES ================= */
+  useEffect(() => {
+    const fetchHealthSubCategories = async () => {
+      try {
+        const catRes = await api.get("/admin/categories");
+        const allCategories = catRes.data || [];
+
+        const healthCategory = allCategories.find(
+          (c: any) => c.name === "Health & Medical"
+        );
+
+        if (!healthCategory) return;
+
+        const subRes = await api.get(
+  `/admin/sub-categories/${healthCategory._id}`
+);
+
+        setCategories(subRes.data || []);
+      } catch (err) {
+        console.log("Error loading subcategories", err);
+      }
+    };
+
+    fetchHealthSubCategories();
+  }, []);
 
 
 /* ✅ NEW STATES FOR LOGIN */
@@ -303,7 +339,218 @@ const handleCustomerSignup = async () => {
   opacity: 0.9;
   color: white;
 }
+/* ================= CATEGORY SLIDER ================= */
 
+.category-slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f1f5f9;
+  padding: 12px;
+  border-radius: 999px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.category-track {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  flex: 1;
+  scrollbar-width: none;
+}
+
+.category-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* CATEGORY CHIP */
+.cat-chip {
+  white-space: nowrap;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: none;
+  background: #e5e7eb;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.cat-chip:hover {
+  transform: translateY(-2px);
+  background: #dbeafe;
+}
+
+/* ACTIVE CHIP */
+.cat-chip.active {
+  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+
+/* ARROW BUTTONS */
+.nav-arrow {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.nav-arrow:hover {
+  background: #e0e7ff;
+  transform: scale(1.05);
+}
+/* ================= RESPONSIVE FIXES ================= */
+
+/* ---------- TABLET (≤ 992px) ---------- */
+@media (max-width: 992px) {
+
+  .health-card {
+    min-width: 340px;
+  }
+
+  .health-card img {
+    width: 130px;
+  }
+
+  .category-slider {
+    padding: 10px;
+  }
+
+  .cat-chip {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+}
+
+
+/* ---------- MOBILE (≤ 768px) ---------- */
+@media (max-width: 768px) {
+
+  /* HEADER */
+  .container {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  .border-bottom .container {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start !important;
+  }
+
+  /* FILTER BAR */
+  .bg-white .d-flex.flex-wrap {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 10px;
+  }
+
+  .input-group {
+    max-width: 100% !important;
+  }
+
+  .form-check {
+    margin-top: 5px;
+  }
+
+  .btn-outline-primary.ms-auto {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+
+  /* CATEGORY SLIDER */
+  .category-slider {
+    border-radius: 14px;
+    padding: 10px;
+  }
+
+  .nav-arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .cat-chip {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  /* CARDS */
+  .health-card {
+    min-width: 90%;
+  }
+
+  .health-card img {
+    width: 110px;
+  }
+
+  .health-card h5 {
+    font-size: 16px;
+  }
+
+  .health-card .p-3 {
+    padding: 12px !important;
+  }
+
+  /* CARD BOTTOM SECTION STACK */
+  .health-card .border-top {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .health-card .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* FOOTER */
+  footer .row {
+    text-align: center;
+  }
+
+  footer .col-md-6 {
+    flex-direction: column;
+    gap: 8px !important;
+  }
+
+}
+
+
+/* ---------- SMALL MOBILE (≤ 480px) ---------- */
+@media (max-width: 480px) {
+
+  .health-card {
+    min-width: 100%;
+  }
+
+  .health-card img {
+    width: 95px;
+  }
+
+  .badge-home {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .cat-chip {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+
+  .nav-arrow {
+    display: none; /* hide arrows on very small screens */
+  }
+
+}
 `}</style>
       {/* ================= HEADER ================= */}
       <div className="border-bottom bg-white">
@@ -342,108 +589,126 @@ const handleCustomerSignup = async () => {
         </div>
 
         <div className="container py-2">
-          <span className="text-muted">Home</span>
+          <span
+    className="text-muted"
+    style={{ cursor: "pointer" }}
+    onClick={() => navigate("/")}
+  >
+    Home
+  </span>
           <span className="mx-2">{">"}</span>
-          <span className="fw-semibold">Healthcare</span>
+          <span className="fw-semibold">Health & Medical</span>
         </div>
       </div>
       {/* ================= END HEADER ================= */}
 
       {/* ================= TOP FILTER BAR ================= */}
       <div className="bg-white border-bottom">
-        <div className="container py-3">
-          
+  <div className="container py-3">
+    <div className="d-flex flex-wrap align-items-center gap-2">
 
-          <div className="d-flex flex-wrap align-items-center gap-2">
-            <div className="input-group" style={{ maxWidth: 320 }}>
-              <span className="input-group-text">
-                <i className="bi bi-search"></i>
-              </span>
-              <input
-                className="form-control"
-                placeholder="Search local clinics near you"
-              />
-            </div>
-
-            <button className="btn btn-light border">
-              Location <i className="bi bi-chevron-down ms-1"></i>
-            </button>
-
-            <button className="btn btn-light border">
-              Rating <i className="bi bi-chevron-down ms-1"></i>
-            </button>
-
-            <button className="btn btn-light border">
-              <i className="bi bi-sliders me-1"></i>
-              Filters
-            </button>
-
-            
-            
-             {/* OPEN TOGGLE */}
-            <div className="form-check form-switch">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={showOpen}
-                onChange={(e) => setShowOpen(e.target.checked)}
-                id="openNowTop"
-              />
-              <label className="form-check-label" htmlFor="openNowTop">
-                Open Now
-              </label>
-            </div>
-
-            {/* HOME VISIT TOGGLE */}
-            <div className="form-check form-switch">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={homeOnly}
-                onChange={(e) => setHomeOnly(e.target.checked)}
-                id="homeVisitTop"
-              />
-              <label className="form-check-label" htmlFor="homeVisitTop">
-                Home Visit
-              </label>
-            </div>
-            <button className="btn btn-outline-primary ms-auto">
-              Clear All
-            </button>
-          </div>
-        </div>
+      <div className="input-group" style={{ maxWidth: 320 }}>
+        <span className="input-group-text">
+          <i className="bi bi-search"></i>
+        </span>
+        <input
+          className="form-control"
+          placeholder="Search local clinics near you"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
+
+      <button className="btn btn-light border">
+        Location <i className="bi bi-chevron-down ms-1"></i>
+      </button>
+
+      <button className="btn btn-light border">
+        Rating <i className="bi bi-chevron-down ms-1"></i>
+      </button>
+
+      <button className="btn btn-light border">
+        <i className="bi bi-sliders me-1"></i>
+        Filters
+      </button>
+
+      <div className="form-check form-switch">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          checked={showOpen}
+          onChange={(e) => setShowOpen(e.target.checked)}
+          id="openNowTop"
+        />
+        <label className="form-check-label" htmlFor="openNowTop">
+          Open Now
+        </label>
+      </div>
+
+      <div className="form-check form-switch">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          checked={homeOnly}
+          onChange={(e) => setHomeOnly(e.target.checked)}
+          id="homeVisitTop"
+        />
+        <label className="form-check-label" htmlFor="homeVisitTop">
+          Home Visit
+        </label>
+      </div>
+
+      <button className="btn btn-outline-primary ms-auto">
+        Clear All
+      </button>
+
+    </div>
+  </div>
+</div>
       {/* ================= END TOP FILTER BAR ================= */}
+{/* CATEGORY SLIDER */}
+<div className="category-slider d-flex align-items-center">
 
-      <div className="container my-4">
-        {/* CATEGORY BUTTONS */}
-        <div className="d-flex gap-2 overflow-auto mb-3">
-          <button
-            className={`btn cat-btn ${
-              activeCategory === "All" ? "btn-primary" : "btn-outline-primary"
-            }`}
-            onClick={() => setActiveCategory("All")}
-          >
-            All
-          </button>
+  <button
+    className="nav-arrow"
+    onClick={() => scrollCategories("left")}
+  >
+    <i className="bi bi-chevron-left"></i>
+  </button>
 
-          {categories.map((c) => (
-            <button
-              key={c.name}
-              className={`btn cat-btn ${
-                activeCategory === c.name
-                  ? "btn-primary"
-                  : "btn-outline-primary"
-              }`}
-              onClick={() => setActiveCategory(c.name)}
-            >
-              {c.name}
-            </button>
-          ))}
-        </div>
+  <div
+    className="category-track d-flex gap-2 overflow-auto"
+    ref={categoryScrollRef}
+    style={{ scrollBehavior: "smooth" }}
+  >
+    <button
+      className={`cat-chip ${activeCategory === "All" ? "active" : ""}`}
+      onClick={() => setActiveCategory("All")}
+    >
+      ✨ All
+    </button>
 
-        
+    {categories.map((c) => (
+      <button
+        key={c._id}
+        className={`cat-chip ${
+          activeCategory === c.name ? "active" : ""
+        }`}
+        onClick={() => setActiveCategory(c.name)}
+      >
+        📌 {c.name}
+      </button>
+    ))}
+  </div>
 
+  <button
+    className="nav-arrow"
+    onClick={() => scrollCategories("right")}
+  >
+    <i className="bi bi-chevron-right"></i>
+  </button>
+
+</div>
         {/* ROWS */}
         {categories
           .filter(
@@ -591,7 +856,7 @@ const handleCustomerSignup = async () => {
         © 2024 GWT-QR
       </div>
     </footer>
-  </div>
+  
  {/* ================= LOGIN POPUP ================= */}
 {showLoginPopup && (
   <div
@@ -710,5 +975,4 @@ const handleCustomerSignup = async () => {
 </React.Fragment>
   );
 };
-
 
