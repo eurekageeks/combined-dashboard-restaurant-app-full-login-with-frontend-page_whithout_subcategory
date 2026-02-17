@@ -153,9 +153,7 @@ const [navOpen, setNavOpen] = useState(false);
         navOpen ? "d-flex" : "d-none"
       } d-md-flex flex-column flex-md-row align-items-center gap-3 gap-md-4 ms-md-auto`}
     >
-      <span className="text-muted">Categories</span>
-      <span className="text-muted">Add Business</span>
-      <span className="text-muted">About</span>
+      
 
       {/* RIGHT: LOGIN */}
       <button
@@ -203,8 +201,23 @@ const [navOpen, setNavOpen] = useState(false);
   className="bg-white position-sticky top-0 z-3 py-3 mt-4"
   style={{ borderBottom: "1px solid #eee" }}
 >
- <div className="d-flex align-items-center justify-content-center">
+  {/* ✅ MOBILE DROPDOWN */}
+  <div className="mobile-category-dropdown">
+    <select
+      className="form-select rounded-pill"
+      value={selectedCategory}
+      onChange={(e) => setSelectedCategory(e.target.value)}
+    >
+      {categories.map((c) => (
+        <option key={c.name} value={c.name}>
+          {c.icon} {c.name}
+        </option>
+      ))}
+    </select>
+  </div>
 
+  {/* ✅ DESKTOP SLIDER */}
+  <div className="desktop-category-slider d-flex align-items-center justify-content-center">
 
     {/* ALL FIXED */}
     <button
@@ -228,7 +241,7 @@ const [navOpen, setNavOpen] = useState(false);
       ‹
     </button>
 
-    {/* SHOW ONLY 4 */}
+    {/* CATEGORY BUTTONS */}
     <div className="d-flex gap-3 flex-nowrap overflow-hidden">
       {otherCategories
         .slice(startIndex, startIndex + visibleCount)
@@ -261,7 +274,6 @@ const [navOpen, setNavOpen] = useState(false);
 
   </div>
 </div>
-
 
       {/* BUSINESS CARDS */}
       <div className="container mt-5">
@@ -411,7 +423,198 @@ const [navOpen, setNavOpen] = useState(false);
   </div>
 </footer>
     </div>
+   <style>{`
+/* ================= MOBILE CATEGORY DROPDOWN ================= */
+
+.mobile-category-dropdown {
+  display: none;
+  padding: 0 15px;
+}
+
+.mobile-category-dropdown select {
+  height: 44px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* ================= RESPONSIVE SWITCH ================= */
+
+@media (max-width: 768px) {
+
+  /* Show dropdown */
+  .mobile-category-dropdown {
+    display: block;
+  }
+
+  /* Hide slider */
+  .desktop-category-slider {
+    display: none !important;
+  }
+}
+/* ================= NAVBAR ================= */
+
+.navbar {
+  border-radius: 50px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* REMOVE COLLAPSE COMPLETELY ON MOBILE */
+@media (max-width: 768px) {
+
+  /* Hide hamburger button */
+  .navbar button.d-md-none {
+    display: none !important;
+  }
+
+  /* Always show login container */
+  .navbar .d-none.d-md-flex,
+  .navbar .d-flex.d-md-flex {
+    display: flex !important;
+  }
+
+  /* Make navbar single row */
+  .navbar .container-fluid {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  /* Remove column stacking */
+  .navbar .flex-column {
+    flex-direction: row !important;
+  }
+
+  /* Push login to right */
+  .navbar .ms-md-auto {
+    margin-left: auto !important;
+  }
+
+  /* Small login button */
+  .navbar .btn-primary {
+    padding: 6px 14px !important;
+    font-size: 14px !important;
+    border-radius: 20px !important;
+  }
+}
+
+
+/* ================= SEARCH ================= */
+
+@media (max-width: 768px) {
+  .container .rounded-pill.d-flex {
+    width: 95% !important;
+    height: 48px !important;
+    padding: 0 16px !important;
+  }
+}
+
+
+/* ================= CATEGORY FILTER FIX ================= */
+
+/* Desktop */
+.bg-white.position-sticky {
+  background: #fff !important;
+  padding: 16px 0;
+  margin-top: 30px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Mobile Fix */
+@media (max-width: 768px) {
+
+  .bg-white.position-sticky {
+    padding: 10px 0 !important;
+  }
+
+  /* Make filter scrollable */
+  .bg-white.position-sticky > div {
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    padding: 0 10px;
+    gap: 10px;
+  }
+
+  /* Hide scrollbar */
+  .bg-white.position-sticky > div::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Make buttons smaller */
+  .bg-white.position-sticky button {
+    padding: 6px 14px !important;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  /* Reduce arrow button size */
+  .bg-white.position-sticky .btn.rounded-circle {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+
+/* ================= CARDS ================= */
+
+.card {
+  transition: all 0.3s ease;
+  border-radius: 20px !important;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+  .col-md-2 {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .col-6.col-sm-3.col-md-2 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .card img {
+    height: 150px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .col-6.col-sm-3.col-md-2 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+
+/* ================= FOOTER ================= */
+
+@media (max-width: 768px) {
+  footer .row {
+    text-align: center !important;
+  }
+
+  footer .col-md-6 {
+    flex-direction: column;
+    gap: 8px !important;
+  }
+}
+
+`}</style>
     </div>
+    
   );
 };
 

@@ -270,6 +270,77 @@ const handleCustomerSignup = async () => {
     <React.Fragment>
       <style>{`
         body {
+        /* ================= FOOTER ================= */
+
+footer {
+  border-top: 1px solid #eee !important;
+  font-size: 14px;
+}
+
+footer .row {
+  align-items: center;
+}
+
+/* Links styling */
+footer .col-md-6 span {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+footer .col-md-6 span:hover {
+  color: #0d6efd;
+}
+
+/* Social icons */
+footer .col-md-3 span {
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+footer .col-md-3 span:hover {
+  transform: translateY(-2px);
+}
+
+
+/* ================= MOBILE FOOTER FIX ================= */
+
+@media (max-width: 768px) {
+
+  footer {
+    text-align: center !important;
+  }
+
+  footer .row {
+    flex-direction: column !important;
+    gap: 18px;
+  }
+
+  /* Brand */
+  footer .col-md-3:first-child {
+    font-size: 18px;
+  }
+
+  /* Links stacked vertically */
+  footer .col-md-6 {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  /* Social icons center */
+  footer .col-md-3:last-child {
+    justify-content: center !important;
+  }
+
+  footer .col-md-3 span {
+    font-size: 20px;
+  }
+
+  /* Copyright spacing */
+  footer .text-muted.small {
+    margin-top: 20px !important;
+  }
+}
           background: #f8fafc;
           font-family: Inter, system-ui, sans-serif;
         }
@@ -407,7 +478,46 @@ const handleCustomerSignup = async () => {
   background: #e0e7ff;
   transform: scale(1.05);
 }
-/* ================= RESPONSIVE FIXES ================= */
+/* ================= RESPONSIVE SYSTEM ================= */
+
+/* ---------- DESKTOP DEFAULT ---------- */
+.health-card {
+  min-width: 420px;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  transition: 0.25s ease;
+}
+
+.health-card:hover {
+  transform: translateY(-4px);
+}
+
+.health-card img {
+  width: 160px;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scroll-row {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding: 10px 4px 14px 4px;
+  scroll-snap-type: x mandatory;
+}
+
+.scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
+.health-card {
+  scroll-snap-align: start;
+}
 
 /* ---------- TABLET (≤ 992px) ---------- */
 @media (max-width: 992px) {
@@ -417,11 +527,7 @@ const handleCustomerSignup = async () => {
   }
 
   .health-card img {
-    width: 130px;
-  }
-
-  .category-slider {
-    padding: 10px;
+    width: 140px;
   }
 
   .cat-chip {
@@ -431,75 +537,58 @@ const handleCustomerSignup = async () => {
 
 }
 
-
-/* ---------- MOBILE (≤ 768px) ---------- */
+/* ================= FILTER MOBILE FIX ================= */
 @media (max-width: 768px) {
 
-  /* HEADER */
-  .container {
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-  }
-
-  .border-bottom .container {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start !important;
-  }
-
-  /* FILTER BAR */
-  .bg-white .d-flex.flex-wrap {
+  /* Target ONLY filter section container */
+  .filter-section .container.d-flex {
     flex-direction: column;
     align-items: stretch !important;
-    gap: 10px;
+    gap: 12px;
   }
 
-  .input-group {
-    max-width: 100% !important;
-  }
-
-  .form-check {
-    margin-top: 5px;
-  }
-
-  .btn-outline-primary.ms-auto {
-    margin-left: 0 !important;
+  /* Location dropdown full width */
+  .filter-section select.form-select {
     width: 100%;
+    height: 44px;
   }
 
-  /* CATEGORY SLIDER */
-  .category-slider {
-    border-radius: 14px;
-    padding: 10px;
+  /* Search input group full width */
+  .filter-section .input-group {
+    width: 100% !important;
   }
 
-  .nav-arrow {
-    width: 36px;
-    height: 36px;
+  .filter-section .input-group input {
+    height: 44px;
+  }
+
+  /* Search button full width */
+  .filter-section .btn-outline-primary {
+    width: 100%;
+    height: 44px;
+  }
+
+}
+
+
+/* ---------- SMALL MOBILE (≤ 480px) ---------- */
+@media (max-width: 480px) {
+
+  .health-card img {
+    height: 180px;
+  }
+
+  .badge-home {
+    font-size: 11px;
+    padding: 5px 8px;
   }
 
   .cat-chip {
-    padding: 8px 16px;
-    font-size: 13px;
+    padding: 6px 12px;
+    font-size: 12px;
   }
 
-  /* CARDS */
-  .health-card {
-    min-width: 90%;
-  }
-
-  .health-card img {
-    width: 110px;
-  }
-
-  .health-card h5 {
-    font-size: 16px;
-  }
-
-  .health-card .p-3 {
-    padding: 12px !important;
-  }
-
+}
   /* CARD BOTTOM SECTION STACK */
   .health-card .border-top {
     flex-direction: column;
@@ -512,15 +601,7 @@ const handleCustomerSignup = async () => {
     justify-content: center;
   }
 
-  /* FOOTER */
-  footer .row {
-    text-align: center;
-  }
-
-  footer .col-md-6 {
-    flex-direction: column;
-    gap: 8px !important;
-  }
+  
 
 }
 
@@ -667,47 +748,54 @@ const handleCustomerSignup = async () => {
 </div>
       {/* ================= END TOP FILTER BAR ================= */}
 {/* CATEGORY SLIDER */}
-<div className="category-slider d-flex align-items-center">
+<div className="container my-3">
+  <div className="category-slider d-flex align-items-center">
 
-  <button
-    className="nav-arrow"
-    onClick={() => scrollCategories("left")}
-  >
-    <i className="bi bi-chevron-left"></i>
-  </button>
-
-  <div
-    className="category-track d-flex gap-2 overflow-auto"
-    ref={categoryScrollRef}
-    style={{ scrollBehavior: "smooth" }}
-  >
     <button
-      className={`cat-chip ${activeCategory === "All" ? "active" : ""}`}
+      className="nav-arrow"
+      onClick={() => scrollCategories("left")}
+    >
+      <i className="bi bi-chevron-left"></i>
+    </button>
+
+    {/* ✅ Fixed "All" Button */}
+    <button
+      className={`cat-chip me-2 ${
+        activeCategory === "All" ? "active" : ""
+      }`}
       onClick={() => setActiveCategory("All")}
+      style={{ flex: "0 0 auto" }}
     >
       ✨ All
     </button>
 
-    {categories.map((c) => (
-      <button
-        key={c._id}
-        className={`cat-chip ${
-          activeCategory === c.name ? "active" : ""
-        }`}
-        onClick={() => setActiveCategory(c.name)}
-      >
-        📌 {c.name}
-      </button>
-    ))}
+    {/* ✅ Scrollable Categories */}
+    <div
+      className="category-track d-flex gap-2 overflow-auto"
+      ref={categoryScrollRef}
+      style={{ scrollBehavior: "smooth" }}
+    >
+      {categories.map((c) => (
+        <button
+          key={c._id}
+          className={`cat-chip ${
+            activeCategory === c.name ? "active" : ""
+          }`}
+          onClick={() => setActiveCategory(c.name)}
+        >
+          📌 {c.name}
+        </button>
+      ))}
+    </div>
+
+    <button
+      className="nav-arrow"
+      onClick={() => scrollCategories("right")}
+    >
+      <i className="bi bi-chevron-right"></i>
+    </button>
+
   </div>
-
-  <button
-    className="nav-arrow"
-    onClick={() => scrollCategories("right")}
-  >
-    <i className="bi bi-chevron-right"></i>
-  </button>
-
 </div>
         {/* ROWS */}
         {categories
@@ -722,7 +810,7 @@ const handleCustomerSignup = async () => {
             if (businesses.length === 0) return null;
 
             return (
-              <div key={cat.name} className="mb-5">
+  <div key={cat.name} className="container mb-5">
                 {/* TITLE + ARROWS */}
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h5 className="fw-bold m-0">{cat.name}</h5>
@@ -832,30 +920,31 @@ const handleCustomerSignup = async () => {
           })}
 
     {/* ROWS */}
-    <footer className="container mt-5 py-4 border-top">
-      <div className="row align-items-center text-center text-md-start">
-        <div className="col-md-3 fw-bold text-primary">
-          GWT-QR
-        </div>
+    {/* FOOTER */}
+<footer className="container mt-5 py-4 border-top">
+  <div className="row align-items-center text-center text-md-start">
+    <div className="col-md-3 fw-bold text-primary">
+      GWT-QR
+    </div>
 
-        <div className="col-md-6 d-flex justify-content-center gap-4 text-muted small my-3 my-md-0">
-          <span>About GWT-QR</span>
-          <span>Contact</span>
-          <span>Privacy Policy</span>
-          <span>Terms</span>
-        </div>
+    <div className="col-md-6 d-flex justify-content-center gap-4 text-muted small my-3 my-md-0">
+      <span>About GWT-QR</span>
+      <span>Contact</span>
+      <span>Privacy Policy</span>
+      <span>Terms</span>
+    </div>
 
-        <div className="col-md-3 d-flex justify-content-center justify-content-md-end gap-2">
-          <span>📘</span>
-          <span>🐦</span>
-          <span>🔗</span>
-        </div>
-      </div>
+    <div className="col-md-3 d-flex justify-content-center justify-content-md-end gap-2">
+      <span>📘</span>
+      <span>🐦</span>
+      <span>🔗</span>
+    </div>
+  </div>
 
-      <div className="text-center text-muted small mt-3">
-        © 2024 GWT-QR
-      </div>
-    </footer>
+  <div className="text-center text-muted small mt-3">
+    © 2024 GWT-QR
+  </div>
+</footer>
   
  {/* ================= LOGIN POPUP ================= */}
 {showLoginPopup && (
