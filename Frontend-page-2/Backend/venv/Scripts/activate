@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\ASUS\Documents\Frontend-page\Backend\venv"
+VIRTUAL_ENV="D:\combined-dashboard-restaurant-app\Frontend-page-2\Backend\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

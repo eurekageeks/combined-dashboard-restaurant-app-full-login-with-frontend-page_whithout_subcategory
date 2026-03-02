@@ -19,6 +19,7 @@ import AddBusiness from "../../Frontend-page-2/frontend/src/pages/AddBusiness";
 import HealthcareDirectory from "./components/HealthcareDirectory";
 import HospitalDetails from "./components/HospitalDetails";
 import HospitalGallery from "./pages/HospitalGallery";
+import HospitalDetails2 from "./components/HospitalDetails2";
 
 // Customer
 import RestaurantMenu from "../../customer/src/components/RestaurantMenu";
@@ -44,9 +45,9 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/healthcare-directory" element={<HealthcareDirectory />} />
-      <Route path="/hospital/:id" element={<HospitalDetails />} />
+      
       <Route path="/hospital-gallery" element={<HospitalGallery />} />
-
+      <Route path="/hospital/:id" element={<HospitalDetails2 />} />
       {/* ADMIN DASHBOARD */}
       <Route
         path="/dashboard/admin"

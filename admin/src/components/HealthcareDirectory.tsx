@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import api from "../frontend-api/api";
+import API from "../services/apiHospitals";
 /* ---------------- CATEGORIES ---------------- */
 const staticCategories = [
   { name: "Hospitals", img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3" },
@@ -19,13 +20,7 @@ const staticCategories = [
 
 /* ---------------- REALISTIC NAMES ---------------- */
 const namePool: Record<string, string[]> = {
-  Hospitals: [
-    "City Care Hospital",
-    "Green Valley Hospital",
-    "Sunrise Multispeciality",
-    "Metro Heart Institute",
-    "LifeLine Hospital",
-  ],
+ 
   Clinics: [
     "Family Health Clinic",
     "Urban Care Clinic",
@@ -90,19 +85,22 @@ const createBusinesses = () => {
   }[] = [];
 
   staticCategories.forEach((cat) => {
-    namePool[cat.name].forEach((name, i) => {
-      list.push({
-        id: `${cat.name}-${i}`,
-        name,
-        category: cat.name,
-        img: cat.img,
-        rating: Number((Math.random() * 2 + 3).toFixed(1)),
-        homeVisit: Math.random() > 0.6,
-        isOpen: Math.random() > 0.5,
-      });
+
+  // ❌ Skip Hospitals (we will use real API data instead)
+  if (cat.name === "Hospitals") return;
+
+  namePool[cat.name].forEach((name, i) => {
+    list.push({
+      id: `${cat.name}-${i}`,
+      name,
+      category: cat.name,
+      img: cat.img,
+      rating: Number((Math.random() * 2 + 3).toFixed(1)),
+      homeVisit: Math.random() > 0.6,
+      isOpen: Math.random() > 0.5,
     });
   });
-
+});
   return list;
 };
 
@@ -110,6 +108,7 @@ export default function HealthcareDirectory() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
 const [categories, setCategories] = useState<any[]>([]);
+const [hospitals, setHospitals] = useState<any[]>([]);
   /* FILTERS */
   const [showOpen, setShowOpen] = useState(true);
   const [homeOnly, setHomeOnly] = useState(false);
@@ -130,6 +129,14 @@ const scrollCategories = (direction: "left" | "right") => {
     left: direction === "left" ? -amount : amount,
     behavior: "smooth",
   });
+};
+const fetchHospitals = async () => {
+  try {
+    const res = await API.get("/api/hospitals/");
+    setHospitals(res.data);
+  } catch (error) {
+    console.error("Error fetching hospitals", error);
+  }
 };
 /* ================= FETCH HEALTH SUBCATEGORIES ================= */
   useEffect(() => {
@@ -156,8 +163,9 @@ const scrollCategories = (direction: "left" | "right") => {
 
     fetchHealthSubCategories();
   }, []);
-
-
+useEffect(() => {
+  fetchHospitals();
+}, []);
 /* ✅ NEW STATES FOR LOGIN */
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -195,23 +203,39 @@ try {
   };
 
   /* ---------------- FILTER ---------------- */
-  const filtered = useMemo(() => {
-    return allBusinesses.filter((b) => {
-      const matchCategory =
-        activeCategory === "All" || b.category === activeCategory;
+  /* ---------------- MERGE API + STATIC ---------------- */
+const combinedBusinesses = useMemo(() => {
+  const apiHospitalsFormatted = hospitals.map((h: any) => ({
+    id: h._id,
+    name: h.name,
+    category: "Hospitals",
+    img: h.image || staticCategories[0].img,
+    rating: 4.5,
+    homeVisit: false,
+    isOpen: true,
+  }));
 
-      const matchSearch = b.name
-        .toLowerCase()
-        .includes(search.toLowerCase());
+  return [...apiHospitalsFormatted, ...allBusinesses];
+}, [hospitals, allBusinesses]);
 
-      const matchOpen = showOpen ? b.isOpen : !b.isOpen;
+/* ---------------- FILTER LOGIC ---------------- */
 
-      const matchHome = homeOnly ? b.homeVisit : true;
+const filtered = useMemo(() => {
+  return combinedBusinesses.filter((b) => {
+    const matchCategory =
+      activeCategory === "All" || b.category === activeCategory;
 
-      return matchCategory && matchSearch && matchOpen && matchHome;
-    });
-  }, [activeCategory, search, showOpen, homeOnly, allBusinesses]);
- 
+    const matchSearch = b.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchOpen = showOpen ? b.isOpen : !b.isOpen;
+
+    const matchHome = homeOnly ? b.homeVisit : true;
+
+    return matchCategory && matchSearch && matchOpen && matchHome;
+  });
+}, [activeCategory, search, showOpen, homeOnly, combinedBusinesses]);
   /* ✅ LOGIN AS CUSTOMER */
   const handleCustomerLogin = async () => {
     setError("");

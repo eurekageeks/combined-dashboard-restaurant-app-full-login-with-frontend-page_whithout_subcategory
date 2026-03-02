@@ -42,37 +42,64 @@ const HospitalDetails = () => {
 
       <div>
         {/* ================= HEADER ================= */}
-        <div className="border-bottom bg-white">
-          <div className="container d-flex justify-content-between align-items-center py-3">
-            <div className="d-flex align-items-center gap-2">
-              <img src="/src/assets/qr.png" alt="logo" width="28" />
-              <h5 className="mb-0 fw-bold text-primary">GWT-QR</h5>
-            </div>
+        {/* ================= HEADER ================= */}
+<div className="border-bottom">
+  <div className="container py-3">
 
-            {user ? (
-              <div className="d-flex align-items-center gap-3">
-                <span className="fw-semibold text-primary">
-                  Hi, {user.name || user.email}
-                </span>
+    {/* Top Row */}
+    <div className="d-flex justify-content-between align-items-center">
+      
+      {/* Logo Section */}
+      <div className="d-flex align-items-center gap-2">
+        <img src="/src/assets/qr.png" alt="logo" width="28" />
+        <h5 className="mb-0 fw-bold text-primary">GWT-QR</h5>
+      </div>
 
-                <button
-                  className="btn btn-danger"
-                  onClick={() => logout && logout()}
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <button
-                className="btn px-4 text-white"
-                style={{ backgroundColor: "#0b3d91", borderColor: "#0b3d91" }}
-                onClick={() => navigate("/login")}
-              >
-                Login
-              </button>
-            )}
-          </div>
+      {/* Login Button */}
+      {user ? (
+        <div className="d-flex align-items-center gap-3">
+          <span className="fw-semibold text-primary">
+            Hi, {user.name || user.email}
+          </span>
+
+          <button
+            className="btn btn-danger"
+            onClick={() => logout && logout()}
+          >
+            Logout
+          </button>
         </div>
+      ) : (
+        <button
+          className="btn px-4 text-white"
+          style={{ backgroundColor: "#1e3a8a", borderColor: "#1e3a8a" }}
+          onClick={() => navigate("/login")}
+        >
+          Login
+        </button>
+      )}
+    </div>
+
+    {/* Breadcrumb Row */}
+    <div className="mt-3">
+      <span
+        className="text-muted"
+        style={{ cursor: "pointer" }}
+        onClick={() => navigate("/healthcare-directory")}
+      >
+        Health & Medical
+      </span>
+
+      <span className="mx-2 text-muted">{">"}</span>
+
+      <span className="fw-semibold text-dark">
+        City Care Hospital
+      </span>
+    </div>
+
+  </div>
+</div>
+
 
         {/* ================= BODY ================= */}
         <div className="container my-4">
