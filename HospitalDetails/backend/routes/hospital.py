@@ -5,7 +5,13 @@ from models.hospital_model import Hospital
 import os
 import shutil
 import json
+import re
 
+def create_slug(name: str) -> str:
+    slug = name.lower()
+    slug = re.sub(r"\s+", "-", slug)
+    slug = re.sub(r"[^\w\-]", "", slug)
+    return slug
 router = APIRouter()
 
 # ==============================
@@ -28,7 +34,22 @@ async def get_hospitals():
         hospitals.append(hospital)
     return hospitals
 
+@router.get("/slug/{slug}")
+async def get_hospital_by_slug(slug: str):
 
+    # convert slug back to hospital name
+    name_from_slug = slug.replace("-", " ")
+
+    # Case-insensitive search
+    hospital = await db.hospitals.find_one({
+        "name": {"$regex": f"^{name_from_slug}$", "$options": "i"}
+    })
+
+    if not hospital:
+        raise HTTPException(status_code=404, detail="Hospital not found")
+
+    hospital["_id"] = str(hospital["_id"])
+    return hospital
 # ==============================
 # GET SINGLE HOSPITAL
 # ==============================
@@ -82,7 +103,7 @@ async def create_hospital(
 
                     doctor["images"].append(file_path)
                     image_index += 1
-
+        hospital_data["slug"] = create_slug(hospital_data["name"])
         validated = Hospital(**hospital_data)
 
         result = await db.hospitals.insert_one(

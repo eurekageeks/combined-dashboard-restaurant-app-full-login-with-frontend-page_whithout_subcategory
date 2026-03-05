@@ -207,6 +207,7 @@ try {
 const combinedBusinesses = useMemo(() => {
   const apiHospitalsFormatted = hospitals.map((h: any) => ({
     id: h._id,
+    slug: h.slug,   // 👈 ADD THIS
     name: h.name,
     category: "Hospitals",
     img: h.image || staticCategories[0].img,
@@ -867,7 +868,17 @@ footer .col-md-3 span:hover {
     key={b.id}
     className="health-card position-relative flex-column"
     style={{ cursor: "pointer" }}
-    onClick={() => navigate(`/hospital/${b.id}`)}
+   onClick={() => {
+  if (b.category === "Hospitals") {
+    const slug = b.name
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]/g, "");
+
+    navigate(`/hospital/${slug}`);
+  }
+}}
   >
 
       {b.homeVisit && (

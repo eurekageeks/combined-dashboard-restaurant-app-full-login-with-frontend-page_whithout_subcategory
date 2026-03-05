@@ -47,7 +47,7 @@ export default function App() {
       <Route path="/healthcare-directory" element={<HealthcareDirectory />} />
       
       <Route path="/hospital-gallery" element={<HospitalGallery />} />
-      <Route path="/hospital/:id" element={<HospitalDetails2 />} />
+      <Route path="/hospital/:slug" element={<HospitalDetails2 />} />
       {/* ADMIN DASHBOARD */}
       <Route
         path="/dashboard/admin"

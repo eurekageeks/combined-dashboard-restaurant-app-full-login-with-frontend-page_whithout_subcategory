@@ -34,6 +34,7 @@ class Contact(BaseModel):
 
 class Hospital(BaseModel):
     name: str
+    slug: str 
     category: str
     about: Optional[str] = None
     address: Optional[str] = None

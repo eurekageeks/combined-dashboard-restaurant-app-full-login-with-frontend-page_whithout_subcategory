@@ -6,7 +6,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import API from "../services/apiHospitals";
 import { ChevronLeft, Phone, Mail, Globe, MapPin, Clock, Star, Award, Users, Stethoscope, Heart, Shield, ChevronRight, Check } from "lucide-react";
 const HospitalDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
  const [expanded, setExpanded] = useState(false);
   const [hospital, setHospital] = useState<any>(null);
@@ -33,15 +33,15 @@ const [newReview, setNewReview] = useState({
 const DEFAULT_AVATAR =
   "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
   useEffect(() => {
-    if (id) {
-      fetchHospital();
-    }
-  }, [id]);
+  if (slug) {
+    fetchHospital();
+  }
+}, [slug]);
 
   const fetchHospital = async () => {
     try {
       setLoading(true);
-      const res = await API.get(`/api/hospitals/${id}`);
+      const res = await API.get(`/api/hospitals/slug/${slug}`);
       setHospital(res.data);
     } catch (err: any) {
       console.error("Error fetching hospital:", err);
@@ -116,13 +116,40 @@ const DEFAULT_AVATAR =
             {/* HERO IMAGE & GALLERY */}
             <div className="row g-2 mb-4">
               <div className="col-md-8">
-                <img 
-                  src={hospital.images?.[0] || "https://images.unsplash.com/photo-1586773860418-d37222d8fce3"} 
-                  className="img-fluid rounded-3 w-100" 
-                  style={{ height: "400px", objectFit: "cover" }} 
-                  alt="Main" 
-                />
-              </div>
+  <div className="position-relative">
+
+    <img
+      src={
+        hospital.images?.[0]
+          ? `http://127.0.0.1:4000/${hospital.images[0]}`
+          : "https://images.unsplash.com/photo-1586773860418-d37222d8fce3"
+      }
+      className="img-fluid rounded-3 w-100"
+      style={{ height: "400px", objectFit: "cover" }}
+      alt={hospital.name}
+    />
+
+    {/* Green Name Badge */}
+    <div
+      className="position-absolute"
+      style={{
+        top: "20px",
+        left: "20px",
+        background: "linear-gradient(135deg, #059669, #0d9488)",
+        color: "white",
+        padding: "8px 18px",
+        borderRadius: "30px",
+        fontWeight: "600",
+        fontSize: "15px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+      }}
+    >
+      <i className="bi bi-house-door me-1"></i>
+      {hospital.name}
+    </div>
+
+  </div>
+</div>
               <div className="col-md-4 d-flex flex-column gap-2">
                 <img 
                   src={hospital.images?.[1] || "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d"} 
@@ -166,9 +193,10 @@ const DEFAULT_AVATAR =
       <Award size={20} />
     </div>
 
-    <h4 className="fw-bold mb-0" style={{ color: "#065f46" }}>
-      About Hospital
-    </h4>
+   <h4 className="fw-bold mb-0" style={{ color: "#065f46" }}>
+    
+  {hospital.name}
+</h4>
   </div>
 
   {(() => {
