@@ -1,6 +1,6 @@
 # app/models/user_models.py
 from pydantic import BaseModel, EmailStr, Field
-from typing import Literal
+from typing import Literal, Optional
 
 
 class SignupRequest(BaseModel):
@@ -15,6 +15,11 @@ class SignupRequest(BaseModel):
         ..., min_length=6, description="User password"
     )
 
+    category_id: Optional[str] = None
+    sub_category_id: Optional[str] = None
+
+    category: Optional[str] = None
+    sub_category: Optional[str] = None
 
 class LoginRequest(BaseModel):
     email: EmailStr

@@ -20,7 +20,7 @@ import HealthcareDirectory from "./components/HealthcareDirectory";
 import HospitalDetails from "./components/HospitalDetails";
 import HospitalGallery from "./pages/HospitalGallery";
 import HospitalDetails2 from "./components/HospitalDetails2";
-
+import ViewVendor from "./components/ViewVendor";
 // Customer
 import RestaurantMenu from "../../customer/src/components/RestaurantMenu";
 
@@ -29,7 +29,7 @@ import VendorProfile from "../../vendor/src/components/VendorProfile";
 import FoodCategoryApp from "../../vendor/src/components/page";
 import Orders from "../../vendor/src/components/Orders";
 import CustomerLists from "../../vendor/src/components/CustomerList";
-
+import EditVendor from "./components/EditVendor";
 // Auth
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -61,6 +61,11 @@ export default function App() {
       >
         <Route index element={<DashboardHome />} />
         <Route path="vendorlist" element={<VendorList />} />
+        <Route path="/dashboard/admin/editvendor/:id" element={<EditVendor />} />
+        <Route
+ path="/dashboard/admin/viewvendor/:id"
+ element={<ViewVendor />}
+/>
         <Route path="customerlist" element={<CustomerList />} />
         <Route path="employeelist" element={<EmployeeList />} />
         <Route path="addcategory" element={<AddCategory />} />

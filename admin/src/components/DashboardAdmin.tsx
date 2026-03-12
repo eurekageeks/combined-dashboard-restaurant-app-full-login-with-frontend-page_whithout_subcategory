@@ -52,7 +52,7 @@ export default function DashboardAdmin() {
 
           <NavLink to="/dashboard/admin/vendorlist" className={linkClass}>
             <Store className="w-5 h-5" />
-            Vendor List
+            Service Providers List
           </NavLink>
 
           <NavLink to="/dashboard/admin/customerlist" className={linkClass}>
